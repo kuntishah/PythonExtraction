@@ -69,45 +69,53 @@ for link in link_list:
         class_desc = empty_string
 
     #class_explanatory notes
-    class_tags =class_soup.find("div",{'class' : "explanatory_note" })
-    if class_tags.p.label is not None:
-        class_expnote = class_tags.p.label.string
+    exp_note_tag =class_soup.find("div",{'class' : "explanatory_note" })
+    if exp_note_tag.p.label is not None:
+        class_expnote = exp_note_tag.p.label.string
         print class_expnote
     else:
         class_expnote = empty_string
 
     #class_explanatory notes includes
-    class_tags =class_soup.find("div",{'class' : "ex_includes" })
     class_includes = ""
-    
-    if class_tags is not None:
-        for i in range(len(class_tags.contents)):
+    includes_tag = exp_note_tag.div
+    if includes_tag is not None:
+        for i in range(len(includes_tag.contents)):
              if i == 0:
-                class_includes = class_tags.contents[i].strip()
-                continue
-             ul_tag = class_soup.find("div",{"class" : "ex_includes" }).ul
-             if ul_tag is not None:
-                 for li_tag in ul_tag.contents:
-                    class_includes = class_includes + "\n" + li_tag.text
-             print class_includes
-             break;# break is for i in range(len(class_tags.contents))
+                class_includes = includes_tag.contents[i].strip()
+                
+                print class_includes
 
-    #class explanatory notes excludes
-    class_tags =class_soup.find("div",{"class" : "ex_excludes" })
+
+
+             table_tag = class_soup.find(("div"),{'class':"ui-datatable-tablewrapper"}).table
+
+             table_rows = table_tag.tbody
+
+             for tr in table_rows.contents:
+                 for td in tr.contents:
+                     for label in td.contents:
+                         class_includes = class_includes + " " + label.string
+
+             break;# break is for i in range(len(class_tags.contents))
+##
+##    #class explanatory notes excludes
     class_excludes = ""
-    if class_tags is not None:
-        for i in range(len(class_tags.contents)):
-             if i == 0:
-                class_excludes = class_tags.contents[i].strip()
-                continue
-             #print class_tags.contents[i], type(class_tags.contents[i])
-             ul_tag = class_soup.find("div",{"class" : "ex_excludes" }).ul
-             if ul_tag is not None:
-                 for li_tag in ul_tag.contents:
-                     class_excludes = class_excludes + "\n" + li_tag.text
-             print class_excludes
-             break;# break is for i in range(len(class_tags.contents))
-
+    excludes_tag = class_soup.find(("div"),{'id':"j_idt642:0:j_idt644:0:j_idt711"})
+    if excludes_tag is not None:
+        for i in range(len(excludes_tag.contents)):
+            class_excludes = "This class does not include, in particular:"
+##
+##
+            table_tag = excludes_tag.table
+##
+            table_rows = table_tag.tbody
+##
+            for tr in table_rows.contents:
+                for td in tr.contents:
+                    for label in td.contents:
+                        pass
+        
     if count>=1 and count <=34:
         goodService = 'good'
     else:
@@ -138,8 +146,8 @@ for link in link_list:
             if cnt > 2:
                 break
             cnt = cnt +1
-    if count > 2:
-                break
+##    if count > 1:
+##                break
     count = count +1
             
 
