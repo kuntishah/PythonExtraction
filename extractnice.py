@@ -48,31 +48,38 @@ for link in link_list:
     class_soup = BeautifulSoup(class_page)
     
     #class number
-    class_tags = class_soup.h1
+ #  class_tags = class_soup.h1
+    class_heading = "class_heading_"+str(count)
+    class_tags = class_soup.find("h1",{'id' : class_heading})
     if class_tags.contents[-1] is None:
         continue
     class_num = class_tags.contents[-1]
+   # print 'class',class_num
     class_num = class_num.strip()
     class_num = class_num.split()
     class_no = class_num[-1]
+    print class_no
  
     #class description
-    class_tags = class_soup.find("div",{"class" : "class_heading" })
+    class_tags = class_soup.find("div",{'class' : "class_heading" })
     if class_tags.contents[-1] is not None:
         class_desc = class_tags.contents[-1]
+        print class_desc
     else:
         class_desc = empty_string
 
     #class_explanatory notes
-    class_tags =class_soup.find("div",{"class" : "explanatory_note" })
-    if class_tags.p is not None:
-        class_expnote = class_tags.p.string
+    class_tags =class_soup.find("div",{'class' : "explanatory_note" })
+    if class_tags.p.label is not None:
+        class_expnote = class_tags.p.label.string
+        print class_expnote
     else:
         class_expnote = empty_string
 
     #class_explanatory notes includes
-    class_tags =class_soup.find("div",{"class" : "ex_includes" })
+    class_tags =class_soup.find("div",{'class' : "ex_includes" })
     class_includes = ""
+    
     if class_tags is not None:
         for i in range(len(class_tags.contents)):
              if i == 0:
@@ -82,6 +89,7 @@ for link in link_list:
              if ul_tag is not None:
                  for li_tag in ul_tag.contents:
                     class_includes = class_includes + "\n" + li_tag.text
+             print class_includes
              break;# break is for i in range(len(class_tags.contents))
 
     #class explanatory notes excludes
@@ -97,14 +105,20 @@ for link in link_list:
              if ul_tag is not None:
                  for li_tag in ul_tag.contents:
                      class_excludes = class_excludes + "\n" + li_tag.text
+             print class_excludes
              break;# break is for i in range(len(class_tags.contents))
 
+    if count>=1 and count <=34:
+        goodService = 'good'
+    else:
+        if count >=35 and count<=45:
+            goodService = 'service'
     #loading the extracted and transformed information into database.
-    cur.execute('''
-    INSERT INTO class (class_number, class_description, class_expnote_desc,
-    class_expnote_includes, class_expnote_excludes, class_good_service VALUES ()
-    ''')
-    
+ #   add_class = ("INSERT INTO class VALUES (?,?,?,?,?,?);")
+    data_class = (class_no, class_desc,class_expnote,class_includes,class_excludes,goodService)
+    cur.execute('''INSERT INTO class VALUES(?,?,?,?,?,?) ''', data_class)
+    print "insert executed"
+    conn.commit()
     #basic num and text retreival
     class_tags = class_soup.find('ul', {'class':'indication_container'})
     if class_tags is not None:
